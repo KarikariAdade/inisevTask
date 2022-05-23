@@ -111,7 +111,7 @@ class WebsiteController extends Controller
             }
 
         }else{
-            return $this->helper->failResponse('Invalid User or Website Code supplied');
+            return $this->helper->failResponse('Invalid User or Website Code supplied or user has already subscribed to the website');
         }
 
 
@@ -125,11 +125,18 @@ class WebsiteController extends Controller
 
         if (!empty($user) && !empty($website)){
 
-            return [
+            $check_subscription = Subscription::query()->where('user_id', $user->id)
+                        ->where('website_id', $website->id)->first();
+
+            if (empty($check_subscription)) {
+                return [
                 'status' => true,
                 'user' => $user,
                 'website' => $website
             ];
+            }
+
+            
         }
 
         return [
