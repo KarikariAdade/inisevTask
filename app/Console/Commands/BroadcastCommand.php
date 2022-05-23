@@ -64,6 +64,7 @@ class BroadcastCommand extends Command
                             'name' => $subscribed_item->user->name,
                             'email' => $subscribed_item->user->email,
                             'subject' => 'Email Notification: '.$query->title,
+                            'title' => $query->title,
                             'body' => $query->description,
                         ];
 

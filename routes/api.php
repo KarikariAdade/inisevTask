@@ -22,6 +22,8 @@ Route::prefix('website')->group(function (){
     Route::post('view/subscriptions', [WebsiteController::class, 'viewSubscriptions']);
 });
 
+
+
 Route::prefix('posts')->group(function (){
 
     Route::get('list', [PostsController::class, 'listPosts']);

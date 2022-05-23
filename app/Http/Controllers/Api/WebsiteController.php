@@ -24,7 +24,7 @@ class WebsiteController extends Controller
 
     public function list()
     {
-        $websites = Website::query()->orderBy('id', 'DESC')->get();
+        $websites = Website::query()->orderBy('id', 'DESC')->paginate(20);
 
         return $this->helper->successResponse($websites);
 

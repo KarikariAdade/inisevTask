@@ -22,7 +22,7 @@ class PostsController extends Controller
 
     public function listPosts()
     {
-        $posts = Posts::query()->orderBy('id', 'DESC')->get();
+        $posts = Posts::query()->orderBy('id', 'DESC')->paginate(20);
 
         return $this->helper->successResponse($posts);
     }
