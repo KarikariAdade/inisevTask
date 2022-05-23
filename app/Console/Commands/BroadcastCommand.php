@@ -44,21 +44,32 @@ class BroadcastCommand extends Command
      */
     public function handle()
     {
+        // Get all posts that are not dispatched
+
         $posts = Posts::query()->where('is_dispatched', 0)->get();
+
 
         $posts->map(function ($query){
 
-            $website = Website::query()->where('id', $query->id)->first();
+            // Get related website
+
+            $website = Website::query()->where('id', $query->website_id)->first();
 
             if (!empty($website)){
 
 
+                // Get subscriptions of selected website
+
                 $subscriptions = Subscription::query()->where('website_id', $website->id)->get();
+
 
                 if (!empty($subscriptions)){
 
 
                     $subscriptions->map(function ($subscribed_item) use($query){
+
+
+                        // Prepare mail
 
                         $data = [
                             'name' => $subscribed_item->user->name,
@@ -68,6 +79,9 @@ class BroadcastCommand extends Command
                             'body' => $query->description,
                         ];
 
+
+                        // Send mail
+
                         Mail::send(new BroadcastMail($data));
                     });
 
@@ -76,6 +90,8 @@ class BroadcastCommand extends Command
 
             }
 
+
+            // Update posts table
 
             DB::table('posts')->where('id', $query->id)->update(['is_dispatched' => true]);
 

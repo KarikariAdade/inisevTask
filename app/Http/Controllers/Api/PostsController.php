@@ -32,15 +32,15 @@ class PostsController extends Controller
     {
         $data = $request->only(['title', 'description', 'website_code']);
 
+        // Validate form fields
         $validate = Validator::make($data, $this->validatePostFields());
 
         if ($validate->fails()){
             return $this->helper->failResponse($validate->errors()->first());
         }
 
+        // Check if selected website exists
         $validate_website = Website::query()->where('code', $data['website_code'])->first();
-
-//        return $this->dumpPostData($data);
 
         if (!empty($validate_website)){
 
@@ -72,6 +72,7 @@ class PostsController extends Controller
 
     }
 
+    // Validation rules
     public function validatePostFields()
     {
         return [
@@ -82,6 +83,7 @@ class PostsController extends Controller
     }
 
 
+    // Prepare db dump data
     public function dumpPostData($data)
     {
         return [

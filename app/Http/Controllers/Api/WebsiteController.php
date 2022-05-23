@@ -35,6 +35,7 @@ class WebsiteController extends Controller
     {
         $data = $request->only(['name', 'url', 'code', 'description']);
 
+        // Validate website
         $validate = Validator::make($data, $this->validateWebsiteFields());
 
         if ($validate->fails()){
@@ -66,6 +67,7 @@ class WebsiteController extends Controller
     }
 
 
+    // Subscribe to a website
     public function subscribe(Request $request)
     {
         $data = $request->only(['website_code', 'user_code']);
@@ -78,6 +80,8 @@ class WebsiteController extends Controller
         if ($validate->fails()){
             return $this->helper->failResponse($validate->errors()->first());
         }
+
+        // Check if user_code and website_code supplied are valid
 
         $check_validity = $this->validateSubscriptionData($data['user_code'], $data['website_code']);
 
@@ -134,10 +138,6 @@ class WebsiteController extends Controller
     }
 
 
-    public function viewSubscriptions(Request $request)
-    {
-        return $request->all();
-    }
 
     public function validateWebsiteFields()
     {
