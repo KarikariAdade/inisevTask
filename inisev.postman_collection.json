@@ -26,7 +26,7 @@
 						},
 						{
 							"key": "code",
-							"value": "WS50933",
+							"value": "WS509332",
 							"type": "text"
 						},
 						{
@@ -74,10 +74,25 @@
 		{
 			"name": "Subscribe to Website",
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_code",
+							"value": "9638",
+							"type": "text"
+						},
+						{
+							"key": "website_code",
+							"value": "WS509332",
+							"type": "text"
+						}
+					]
+				},
 				"url": {
-					"raw": "localhost:8001/api/website/list",
+					"raw": "localhost:8001/api/website/subscribe",
 					"host": [
 						"localhost"
 					],
@@ -85,7 +100,7 @@
 					"path": [
 						"api",
 						"website",
-						"list"
+						"subscribe"
 					]
 				}
 			},
@@ -93,17 +108,68 @@
 		},
 		{
 			"name": "List Posts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8001/api/posts/list",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"api",
+						"posts",
+						"list"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Store Post",
 			"request": {
-				"method": "GET",
-				"header": []
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "This is the new tiele",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "This is the new description",
+							"type": "text"
+						},
+						{
+							"key": "website_code",
+							"value": "WS509332",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8001/api/posts/store",
+					"host": [
+						"localhost"
+					],
+					"port": "8001",
+					"path": [
+						"api",
+						"posts",
+						"store"
+					]
+				}
 			},
 			"response": []
 		}
