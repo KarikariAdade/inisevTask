@@ -30,6 +30,7 @@ class PostsController extends Controller
 
     public function store(Request $request)
     {
+
         $data = $request->only(['title', 'description', 'website_code']);
 
         // Validate form fields
@@ -50,7 +51,7 @@ class PostsController extends Controller
 
             try {
 
-                $post = Posts::query()->create($this->dumpPostData($data));
+                Posts::query()->create($this->dumpPostData($data));
 
                 DB::commit();
 
@@ -80,6 +81,26 @@ class PostsController extends Controller
             'description' => 'required',
             'website_code' => 'required'
         ];
+    }
+
+
+    public function runDispatch()
+    {
+        Posts::where('is_dispatched', 0)->chunk(1, function ($all_posts) {
+
+            dd($all_posts);
+//            $query->map(function ($post) {
+//
+//
+//
+//                $website = Website::query()->where('id', $post->website_id)->first();
+//
+//
+//
+//
+//
+//            });
+        });
     }
 
 

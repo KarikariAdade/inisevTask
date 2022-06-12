@@ -7,20 +7,18 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class BroadcastMail extends Mailable implements ShouldQueue
+class AlexisMail extends Mailable
 {
     use Queueable, SerializesModels;
-
-    public $data;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct()
     {
-        $this->data = $data;
+        //
     }
 
     /**
@@ -30,11 +28,6 @@ class BroadcastMail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        $data = $this->data;
-
-        return $this->markdown('emails.broadcast_mail')
-            ->to($data['email'])
-            ->subject($data['subject'])
-            ->with($data);
+        return $this->markdown('emails.alexis');
     }
 }

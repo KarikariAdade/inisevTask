@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\Website;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class BroadcastCommand extends Command
@@ -46,55 +47,67 @@ class BroadcastCommand extends Command
     {
         // Get all posts that are not dispatched
 
-        $posts = Posts::query()->where('is_dispatched', 0)->get();
+        DB::beginTransaction();
+
+        try {
+
+            Posts::query()->where('is_dispatched', 0)->chunk(10, function ($all_posts) {
 
 
-        $posts->map(function ($query){
+                $all_posts->each(function ($item) {
 
-            // Get related website
+                    $website = Website::query()->where('id', $item->website_id)->first();
 
-            $website = Website::query()->where('id', $query->website_id)->first();
+                    if (!empty($website)) {
 
-            if (!empty($website)){
+                        // Get subscriptions of selected website
 
+                        $subscriptions = Subscription::query()->where('website_id', $website->id)->get();
 
-                // Get subscriptions of selected website
+                        $subscriptions->each(function ($subscribed_item) use ($item) {
 
-                $subscriptions = Subscription::query()->where('website_id', $website->id)->get();
+                            $data = [
+                                'name' => $subscribed_item->user->name,
+                                'email' => $subscribed_item->user->email,
+                                'subject' => 'Email Notification: '.$item->title,
+                                'title' => $item->title,
+                                'body' => $item->description,
+                            ];
 
+                            $count = 0;
 
-                if (!empty($subscriptions)){
+                            BroadcastPost::dispatch($data)->delay(5000);
 
-
-                    $subscriptions->map(function ($subscribed_item) use($query){
-
-
-                        // Prepare mail
-
-                        $data = [
-                            'name' => $subscribed_item->user->name,
-                            'email' => $subscribed_item->user->email,
-                            'subject' => 'Email Notification: '.$query->title,
-                            'title' => $query->title,
-                            'body' => $query->description,
-                        ];
+                            Log::alert('============= DISPATCH POST =========='.++$count);
 
 
-                        // Send mail
 
-                        Mail::send(new BroadcastMail($data));
-                    });
-
-                }
+                        });
 
 
-            }
+                    }
 
 
-            // Update posts table
+                    Log::alert('============= ITEM ID =========='.$item->id);
 
-            DB::table('posts')->where('id', $query->id)->update(['is_dispatched' => true]);
+                    DB::table('posts')->where('id', $item->id)->update(['is_dispatched' => true]);
 
-        });
+
+                    DB::commit();
+
+                });
+
+            });
+
+
+
+        } catch (\Exception $exception){
+
+            DB::rollBack();
+
+            Log::alert('============= DISPATCH ERROR ========== MESSAGE: '.$exception->getMessage(). '======== LINE: ========'. $exception->getLine());
+
+        }
+
     }
 }
